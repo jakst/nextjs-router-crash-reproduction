@@ -1,34 +1,25 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Next.js crashes on some special routes when there's a catch-all page.
 
-## Getting Started
+## To reproduce
 
-First, run the development server:
+1. Run `yarn build`
+1. Run `yarn start`
+1. Visit [http://localhost:3000/%ff](http://localhost:3000/%ff)
 
-```bash
-npm run dev
-# or
-yarn dev
+You will get a `400 Bad Request` instead of `404 Page Not Found` on the document request, but there will also be an underlying server crash that gets logged if you add an `_error` page.
+
+The stack trace for the crash looks like this:
+
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+DecodeError: failed to decode param
+  at decode (./node_modules/next/dist/shared/lib/router/utils/route-matcher.js:18:23)
+  at ./node_modules/next/dist/shared/lib/router/utils/route-matcher.js:29:21
+  at Array.forEach (<anonymous>)
+  at Object.match (./node_modules/next/dist/shared/lib/router/utils/route-matcher.js:23:29)
+  at NextNodeServer.renderToResponse (./node_modules/next/dist/server/base-server.js:1072:49)
+  at processTicksAndRejections (node:internal/process/task_queues:96:5)
+  at async NextNodeServer.pipe (./node_modules/next/dist/server/base-server.js:623:25)
+  at async Object.fn (./node_modules/next/dist/server/base-server.js:496:21)
+  at async Router.execute (./node_modules/next/dist/server/router.js:228:32)
+  at async NextNodeServer.run (./node_modules/next/dist/server/base-server.js:600:29)
+```
